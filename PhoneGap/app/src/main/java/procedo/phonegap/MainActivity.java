@@ -28,6 +28,7 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 
     private final Handler handler = new Handler(this);
     private WebView web;
+    Button button;
 
     private RelativeLayout relativeLayout;
     private LinearLayout linearLayout;
@@ -44,11 +45,10 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         web.getSettings().setJavaScriptEnabled(true);
         web.loadUrl("file:///android_asset/codemirror2/webkit/home.html");
         web.addJavascriptInterface(new JavascriptInterface(this), "AndroidCode");
-        web.getSettings().setJavaScriptEnabled(true);
         web.requestFocus(View.FOCUS_DOWN);
         web.setOnTouchListener(this);
 
-        final Button button = (Button) findViewById(R.id.showHideButton);
+        button = (Button) findViewById(R.id.showHideButton);
         button.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -56,8 +56,6 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 
                 clicked = !clicked;
                 showed = !showed;
-
-                callShowHide();
 
                 new Runnable() {
                     public void run() {
@@ -69,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
     }
 
     private void callShowHide() {
-        Toast.makeText(getApplicationContext(), "SHOWED STATUS: " + showed + "\n CLICKED STATUS: " + clicked, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "SHOWED STATUS: " + showed + "\n CLICKED STATUS: " + clicked, Toast.LENGTH_LONG).show();
         if(showed)
         {
             if(clicked)
@@ -78,7 +76,9 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
             }
         }
         else
+        {
             showKeyBoard();
+        }
     }
 
     @Override
@@ -114,7 +114,7 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 
         public void toastIt(String text) {
 
-            Toast.makeText(mCtx, text, Toast.LENGTH_LONG).show();
+            //Toast.makeText(mCtx, text, Toast.LENGTH_LONG).show();
         }
 
         public void setText(String text) {
@@ -128,8 +128,7 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         if (v.getId() == R.id.webView && event.getAction() == MotionEvent.ACTION_DOWN){
             handler.sendEmptyMessageDelayed(CLICK_ON_WEBVIEW, 500);
 
-            web.clearFocus();
-            web.setFocusable(false);
+            callShowHide();
         }
         return false;
     }
@@ -142,7 +141,6 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         }
         if (msg.what == CLICK_ON_WEBVIEW){
             //Toast.makeText(this, "WebView clicked", Toast.LENGTH_SHORT).show();
-            return true;
         }
         return false;
     }
@@ -153,10 +151,16 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         Toast.makeText(this, "Showed keyboard", Toast.LENGTH_SHORT).show();*/
 
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        web.requestFocus();
         inputMethodManager.showSoftInput(web, 0);
 
-        web.setFocusable(true);
+        button.setFocusableInTouchMode(false);
+        button.clearFocus();
+
+        web.setFocusableInTouchMode(true);
+        web.requestFocus(View.FOCUS_DOWN);
+        web.setOnTouchListener(this);
+
+        //button.setFocusable(false);
     }
 
     public void hideKeyBoard() {
@@ -169,7 +173,11 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 
             web.clearFocus();
-            web.setFocusable(false);
+            web.setFocusableInTouchMode(false);
+
+            button.setFocusableInTouchMode(true);
+            //button.setFocusable(true);
+            button.requestFocus(View.FOCUS_DOWN);
         }
     }
 }
