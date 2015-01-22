@@ -127,6 +127,9 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
     public boolean onTouch(View v, MotionEvent event) {
         if (v.getId() == R.id.webView && event.getAction() == MotionEvent.ACTION_DOWN){
             handler.sendEmptyMessageDelayed(CLICK_ON_WEBVIEW, 500);
+
+            web.clearFocus();
+            web.setFocusable(false);
         }
         return false;
     }
